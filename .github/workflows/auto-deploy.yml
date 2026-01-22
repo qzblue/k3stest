@@ -1,0 +1,23 @@
+name: auto deploy k3stest
+
+on:
+  push:
+    branches: ["main", "master"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH and update k3s
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.K3S_HOST }}
+          username: ${{ secrets.K3S_USER }}
+          key: ${{ secrets.K3S_SSH_KEY }}
+          script: |
+            cd ~/k3stest
+            git pull
+            sudo kubectl apply -f deploy.yaml
+            sudo kubectl -n k3stest create configmap web-index --from-file=index.html=./index.html --dry-run=client -o yaml | sudo kubectl apply -f -
+            sudo kubectl -n k3stest rollout restart deployment web
+            sudo kubectl -n k3stest get pods
