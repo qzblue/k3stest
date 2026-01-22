@@ -20,4 +20,4 @@ jobs:
             sudo kubectl apply -f deploy.yaml
             sudo kubectl -n k3stest create configmap web-index --from-file=index.html=./index.html --dry-run=client -o yaml | sudo kubectl apply -f -
             sudo kubectl -n k3stest rollout restart deployment web
-            sudo kubectl -n k3stest get pods
+            sudo kubectl -n k3stest get pods -o wide
